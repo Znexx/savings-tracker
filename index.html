@@ -560,18 +560,18 @@ body{position:relative;z-index:0}
 
 /* per-scene body gradients (dark only; light keeps default) */
 @media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]) body[data-bg="city"]{
+  :root:not([data-theme="light"]) body[data-bg="city"]:not(.has-bgimg){
     background:linear-gradient(180deg,#070B1E 0%,#141B38 42%,#2B2749 68%,#453560 100%);
     background-attachment:fixed;
   }
-  :root:not([data-theme="light"]) body[data-bg="sakura"]{
+  :root:not([data-theme="light"]) body[data-bg="sakura"]:not(.has-bgimg){
     background:
       radial-gradient(900px 480px at 80% -10%, rgba(255,158,199,.10), transparent 60%),
       radial-gradient(700px 400px at -10% 30%, rgba(255,122,89,.06), transparent 55%),
       var(--bg);
     background-attachment:fixed;
   }
-  :root:not([data-theme="light"]) body[data-bg="nebula"]{
+  :root:not([data-theme="light"]) body[data-bg="nebula"]:not(.has-bgimg){
     background:
       radial-gradient(1000px 520px at 70% -15%, rgba(124,92,255,.12), transparent 62%),
       radial-gradient(720px 420px at -12% 40%, rgba(0,229,199,.05), transparent 55%),
@@ -579,24 +579,49 @@ body{position:relative;z-index:0}
     background-attachment:fixed;
   }
 }
-:root[data-theme="dark"] body[data-bg="city"]{
+:root[data-theme="dark"] body[data-bg="city"]:not(.has-bgimg){
   background:linear-gradient(180deg,#070B1E 0%,#141B38 42%,#2B2749 68%,#453560 100%);
   background-attachment:fixed;
 }
-:root[data-theme="dark"] body[data-bg="sakura"]{
+:root[data-theme="dark"] body[data-bg="sakura"]:not(.has-bgimg){
   background:
     radial-gradient(900px 480px at 80% -10%, rgba(255,158,199,.10), transparent 60%),
     radial-gradient(700px 400px at -10% 30%, rgba(255,122,89,.06), transparent 55%),
     var(--bg);
   background-attachment:fixed;
 }
-:root[data-theme="dark"] body[data-bg="nebula"]{
+:root[data-theme="dark"] body[data-bg="nebula"]:not(.has-bgimg){
   background:
     radial-gradient(1000px 520px at 70% -15%, rgba(124,92,255,.12), transparent 62%),
     radial-gradient(720px 420px at -12% 40%, rgba(0,229,199,.05), transparent 55%),
     var(--bg);
   background-attachment:fixed;
 }
+
+/* wallpaper image layer (user-supplied) */
+#bgimg{
+  position:fixed;inset:0;z-index:-2;pointer-events:none;
+  background-position:center;background-size:cover;background-repeat:no-repeat;
+  display:none;
+}
+body.has-bgimg #bgimg{display:block}
+#bgimg::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(5,7,11,.55),rgba(5,7,11,.66));
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]) body.has-bgimg #bgimg::after{
+    background:linear-gradient(180deg,rgba(232,237,242,.72),rgba(232,237,242,.8));
+  }
+}
+:root[data-theme="light"] body.has-bgimg #bgimg::after{
+  background:linear-gradient(180deg,rgba(232,237,242,.72),rgba(232,237,242,.8));
+}
+
+/* wallpaper image controls */
+.img-controls{display:flex;gap:8px;margin-bottom:10px}
+.img-controls input{flex:1;min-width:0}
+.img-note{font-size:12px;color:var(--text-dim);margin-bottom:16px;line-height:1.4}
 
 /* backdrop picker chips */
 .bg-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
@@ -657,6 +682,7 @@ body{position:relative;z-index:0}
 </style>
 </head>
 <body>
+<div id="bgimg" aria-hidden="true"></div>
 <canvas id="bg3d" aria-hidden="true"></canvas>
 
 <header class="top">
@@ -808,8 +834,19 @@ body{position:relative;z-index:0}
       <button type="button" class="seg-btn" data-theme-set="dark">Dark</button>
       <button type="button" class="seg-btn" data-theme-set="system">System</button>
     </div>
-    <div class="field-label">Wallpaper</div>
-    <div class="bg-chips" role="group" aria-label="Wallpaper scene">
+    <div class="field-label">Wallpaper image</div>
+    <div class="img-controls">
+      <button type="button" class="panel-btn" id="bgImgUploadBtn" style="margin-bottom:0">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+        Upload
+      </button>
+      <button type="button" class="panel-btn" id="bgImgRemoveBtn" style="margin-bottom:0">Remove</button>
+    </div>
+    <input type="file" id="bgImgFile" accept="image/*" hidden>
+    <input type="url" class="field" id="bgImgUrl" placeholder="Paste image URL and press Enter" style="margin-bottom:0" aria-label="Wallpaper image URL">
+    <p class="img-note" id="bgImgNote">Upload a wallpaper from your device or paste a link. Big images are auto-resized to fit browser storage. Works best with dark wallpapers.</p>
+    <div class="field-label">3D Scene (over the wallpaper)</div>
+    <div class="bg-chips" role="group" aria-label="3D scene">
       <button type="button" class="bg-chip" data-bg-set="particles">Particles</button>
       <button type="button" class="bg-chip" data-bg-set="sakura">Sakura</button>
       <button type="button" class="bg-chip" data-bg-set="city">Night City</button>
@@ -1239,7 +1276,8 @@ body{position:relative;z-index:0}
     if(obj.theme === "light" || obj.theme === "dark" || obj.theme === "system") theme = obj.theme;
     var bg = "particles";
     if(obj.bg === "particles" || obj.bg === "sakura" || obj.bg === "city" || obj.bg === "nebula" || obj.bg === "off") bg = obj.bg;
-    return { currency: currency, goal: goal, entries: entries, goalName: goalName, goalDate: goalDate, theme: theme, bg: bg };
+    var bgImg = (typeof obj.bgImg === "string" && obj.bgImg.length > 0 && obj.bgImg.length < 5000000 && /^(data:image\/|https?:\/\/)/.test(obj.bgImg)) ? obj.bgImg : null;
+    return { currency: currency, goal: goal, entries: entries, goalName: goalName, goalDate: goalDate, theme: theme, bg: bg, bgImg: bgImg };
   }
 
   function load(){
@@ -1264,7 +1302,7 @@ body{position:relative;z-index:0}
     }
   }
 
-  var state = load() || { currency: "₱", goal: 1000, entries: [], goalName: null, goalDate: null, theme: null, bg: "particles" };
+  var state = load() || { currency: "₱", goal: 1000, entries: [], goalName: null, goalDate: null, theme: null, bg: "particles", bgImg: null };
 
   /* ---------- helpers ---------- */
 
@@ -2075,6 +2113,96 @@ body{position:relative;z-index:0}
       '<div class="profile-stat"><span class="l">Saving since</span><div class="v">' + esc(since) + '</div></div>' +
       '<div class="profile-stat"><span class="l">Current streak</span><div class="v acc">' + (n > 0 ? n + (n === 1 ? " day" : " days") : "0 days") + '</div></div>';
   }
+
+  /* ---------- wallpaper image layer ---------- */
+
+  var bgImgEl = document.getElementById("bgimg");
+
+  function applyBgImg(){
+    if(state.bgImg){
+      bgImgEl.style.backgroundImage = "url(\"" + state.bgImg.replace(/"/g, "%22") + "\")";
+      document.body.classList.add("has-bgimg");
+    } else {
+      bgImgEl.style.backgroundImage = "";
+      document.body.classList.remove("has-bgimg");
+    }
+  }
+
+  function setBgImg(dataOrUrl, label){
+    state.bgImg = dataOrUrl;
+    save();
+    applyBgImg();
+    toast(label);
+  }
+
+  // downscale to max 1600px wide/tall, JPEG q.82 — keeps localStorage under quota
+  function shrinkImage(file, cb){
+    var url = URL.createObjectURL(file);
+    var img = new Image();
+    img.onload = function(){
+      var MAX = 1600;
+      var scale = Math.min(1, MAX / Math.max(img.width, img.height));
+      var w = Math.round(img.width * scale), h = Math.round(img.height * scale);
+      var cv = document.createElement("canvas");
+      cv.width = w; cv.height = h;
+      cv.getContext("2d").drawImage(img, 0, 0, w, h);
+      URL.revokeObjectURL(url);
+      var data;
+      try { data = cv.toDataURL("image/jpeg", .82); }
+      catch(e){ cb(null); return; }
+      cb(data);
+    };
+    img.onerror = function(){ URL.revokeObjectURL(url); cb(null); };
+    img.src = url;
+  }
+
+  $("bgImgUploadBtn").addEventListener("click", function(){ $("bgImgFile").click(); });
+
+  $("bgImgFile").addEventListener("change", function(){
+    var file = this.files && this.files[0];
+    this.value = "";
+    if(!file) return;
+    if(!/^image\//.test(file.type)){ toast("Pick an image file"); return; }
+    shrinkImage(file, function(data){
+      if(!data){ toast("Couldn't read that image"); return; }
+      state.bgImg = data;
+      try {
+        localStorage.setItem(KEY, JSON.stringify(state));
+      } catch(e){
+        state.bgImg = null;
+        toast("Image too large for storage — try a smaller one");
+        return;
+      }
+      applyBgImg();
+      toast("Wallpaper set");
+      $("bgImgNote").textContent = "Wallpaper active. Remove to go back to the scene background.";
+    });
+  });
+
+  $("bgImgUrl").addEventListener("keydown", function(e){
+    if(e.key !== "Enter") return;
+    var v = this.value.trim();
+    if(!v){ return; }
+    if(!/^https:\/\//.test(v)){ toast("Link must start with https://"); return; }
+    // preflight: URL must resolve to an image before saving
+    var probe = new Image();
+    var note = $("bgImgNote");
+    note.textContent = "Loading image…";
+    probe.onload = function(){ setBgImg(v, "Wallpaper set"); note.textContent = "Wallpaper active. Remove to go back to the scene background."; };
+    probe.onerror = function(){ note.textContent = "That link didn't load as an image. Direct image links only (ends in .jpg/.png, or an image page URL won't work)."; };
+    probe.src = v;
+  });
+
+  $("bgImgRemoveBtn").addEventListener("click", function(){
+    state.bgImg = null;
+    $("bgImgUrl").value = "";
+    save();
+    applyBgImg();
+    toast("Wallpaper removed");
+    $("bgImgNote").textContent = "Upload a wallpaper from your device or paste a link. Big images are auto-resized to fit browser storage. Works best with dark wallpapers.";
+  });
+
+  applyBgImg();
 
   /* ---------- activity filter ---------- */
 
