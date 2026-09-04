@@ -213,6 +213,7 @@ button:active{transform:scale(.97)}
 .field::placeholder{color:var(--text-dim);opacity:.75}
 #date{width:150px;flex:none;color-scheme:light dark}
 .error-line{color:var(--spend);font-size:13px;margin:-4px 0 10px}
+.hint-line{color:var(--accent);font-size:13px;font-weight:600;margin:-4px 0 10px;font-variant-numeric:tabular-nums}
 #note{margin-bottom:14px}
 .submit{
   width:100%;height:50px;border-radius:14px;
@@ -434,10 +435,11 @@ button:active{transform:scale(.97)}
     <div class="input-row">
       <div class="amount-wrap" id="amountWrap">
         <span class="cur" id="curPrefix" aria-hidden="true">₱</span>
-        <input type="number" inputmode="decimal" step="0.01" min="0" placeholder="0.00" id="amount" aria-label="Amount">
+        <input type="text" inputmode="decimal" placeholder="0.00 or 23+21+56" id="amount" aria-label="Amount" autocomplete="off">
       </div>
       <input type="date" class="field" id="date" aria-label="Date">
     </div>
+    <div class="hint-line" id="amountHint" hidden></div>
     <div class="error-line" id="amountError" hidden>Enter an amount greater than 0</div>
     <input type="text" class="field" id="note" maxlength="80" placeholder="What for? (optional)" aria-label="Note">
     <button type="button" class="submit save" id="addBtn">Add saving</button>
@@ -639,6 +641,23 @@ button:active{transform:scale(.97)}
     return b;
   }
 
+  // accepts "120.50", "23+21+56", "100-15" — sums left to right, no eval
+  function parseAmount(raw){
+    var s = String(raw).replace(/,/g, "").replace(/\s+/g, "").replace(/−/g, "-");
+    if(s === "") return NaN;
+    if(/^[0-9]*\.?[0-9]+$/.test(s)) return Number(s);
+    if(!/^[0-9.]+([+-][0-9.]+)+$/.test(s)) return NaN;
+    var parts = s.split(/([+-])/);
+    var total = 0, op = "+";
+    for(var i = 0; i < parts.length; i++){
+      var p = parts[i];
+      if(p === "") continue;
+      if(p === "+" || p === "-"){ op = p; continue; }
+      total += op === "-" ? -Number(p) : Number(p);
+    }
+    return total;
+  }
+
   /* ---------- dom refs ---------- */
 
   var $ = function(id){ return document.getElementById(id); };
@@ -651,6 +670,7 @@ button:active{transform:scale(.97)}
   var amountInput = $("amount");
   var amountWrap = $("amountWrap");
   var amountError = $("amountError");
+  var amountHint = $("amountHint");
   var dateInput = $("date");
   var noteInput = $("note");
   var addBtn = $("addBtn");
@@ -864,7 +884,7 @@ button:active{transform:scale(.97)}
   segSpend.addEventListener("click", function(){ setSeg("spend"); });
 
   function addEntry(){
-    var amount = Number(amountInput.value);
+    var amount = parseAmount(amountInput.value);
     if(!isFinite(amount) || amount <= 0){
       amountWrap.classList.add("invalid");
       amountError.hidden = false;
@@ -889,7 +909,16 @@ button:active{transform:scale(.97)}
   }
   addBtn.addEventListener("click", addEntry);
   amountInput.addEventListener("input", function(){
-    if(amountWrap.classList.contains("invalid") && Number(amountInput.value) > 0){
+    var v = this.value.trim();
+    var t = parseAmount(v);
+    var isExpr = /[+\-−]/.test(v);
+    if(isExpr && isFinite(t) && t > 0){
+      amountHint.textContent = "= " + fmt(t);
+      amountHint.hidden = false;
+    } else {
+      amountHint.hidden = true;
+    }
+    if(amountWrap.classList.contains("invalid") && isFinite(t) && t > 0){
       amountWrap.classList.remove("invalid");
       amountError.hidden = true;
     }
