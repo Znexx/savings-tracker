@@ -112,12 +112,24 @@ select{background:var(--surface-2);border:1px solid var(--border);border-radius:
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:8px}
 button:active{transform:scale(.97)}
 
-/* header */
-.top{display:flex;align-items:center;justify-content:space-between;padding:10px 0 18px}
-.app-name{font-size:17px;font-weight:800;letter-spacing:-.01em;display:flex;align-items:center;gap:8px}
+/* header + top nav menu */
+.top{display:flex;align-items:center;justify-content:space-between;padding:10px 0 18px;gap:12px}
+.top-nav{position:sticky;top:0;z-index:30;padding:10px 12px;margin:0 -12px 18px;
+  background:var(--surface);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);
+  border:1px solid var(--glass-border);border-radius:16px;box-shadow:var(--card-shadow),var(--card-glow)}
+.app-name{font-size:17px;font-weight:800;letter-spacing:-.01em;display:flex;align-items:center;gap:8px;white-space:nowrap}
 .app-name .logo{width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:#12091F;font-size:14px;box-shadow:0 0 14px var(--glow)}
+.menu{display:flex;align-items:center;gap:2px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.menu::-webkit-scrollbar{display:none}
+.menu-link{
+  padding:8px 13px;border-radius:10px;font-size:13.5px;font-weight:600;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--text-dim);white-space:nowrap;
+  transition:color 150ms ease,background 150ms ease,box-shadow 150ms ease;
+}
+.menu-link:hover{color:var(--text);background:var(--surface-2)}
+.menu-link.active{color:var(--accent);background:var(--accent-soft);box-shadow:0 0 12px var(--glow)}
 .icon-btn{
-  width:40px;height:40px;border-radius:12px;
+  width:40px;height:40px;border-radius:12px;flex:none;
   display:flex;align-items:center;justify-content:center;
   color:var(--text-dim);transition:color 150ms ease,background 150ms ease,transform 150ms ease;
 }
@@ -147,13 +159,28 @@ button:active{transform:scale(.97)}
 
 /* hero */
 .hero{border-color:rgba(139,92,246,.42);box-shadow:var(--card-shadow),0 0 36px rgba(139,92,246,.12)}
-:root[data-theme="light"] .hero{border-color:rgba(0,120,110,.4)}
+:root[data-theme="light"] .hero{border-color:rgba(124,58,237,.4)}
 .hero::before{
   content:"";position:absolute;inset:0;pointer-events:none;
   background:radial-gradient(circle at 88% -30%,var(--accent-soft),transparent 60%);
 }
-.hero-spark{position:absolute;left:0;right:0;bottom:0;height:64px;width:100%;pointer-events:none;opacity:.55}
-.hero > *:not(.hero-spark){position:relative}
+.hero-grid{position:relative;display:grid;grid-template-columns:1fr;gap:8px}
+.hero-copy{position:relative}
+.hero-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.hero-head .section-title{margin-bottom:0}
+.eyebrow{
+  display:inline-block;font-size:12px;font-weight:700;letter-spacing:.28em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:12px;
+}
+.hero-stage{position:relative;min-height:220px;display:flex;align-items:center;justify-content:center}
+#char3d{width:100%;max-width:320px;height:240px;display:block}
+.hero-cta{
+  margin-top:16px;padding:12px 26px;border-radius:12px;font-size:15px;font-weight:700;
+  color:#fff;background:linear-gradient(135deg,var(--accent-2),var(--accent));
+  box-shadow:0 4px 18px rgba(139,92,246,.4);
+  transition:transform 150ms ease,box-shadow 150ms ease;
+}
+.hero-cta:hover{box-shadow:0 6px 24px rgba(139,92,246,.55)}
 .balance{
   font-size:clamp(38px,11vw,52px);
   font-weight:800;
@@ -439,30 +466,7 @@ button:active{transform:scale(.97)}
 }
 .link-btn:hover{color:var(--spend)}
 
-/* bottom nav */
-.bottom-nav{
-  position:fixed;left:50%;bottom:18px;transform:translateX(-50%);
-  z-index:25;display:flex;gap:2px;
-  background:var(--surface);
-  backdrop-filter:var(--glass-blur);
-  -webkit-backdrop-filter:var(--glass-blur);
-  border:1px solid var(--glass-border);border-radius:999px;
-  padding:6px;
-  box-shadow:var(--float-shadow),0 0 26px rgba(139,92,246,.09);
-  max-width:calc(100vw - 32px);
-}
-.nav-btn{
-  display:flex;flex-direction:column;align-items:center;gap:2px;
-  padding:7px 13px;border-radius:999px;
-  font-size:10px;font-weight:600;color:var(--text-dim);
-  transition:color 150ms ease,background 150ms ease,box-shadow 150ms ease;
-}
-.nav-btn svg{width:18px;height:18px}
-.nav-btn.active{
-  color:var(--accent);
-  background:var(--accent-soft);
-  box-shadow:0 0 14px var(--glow);
-}
+/* (bottom nav removed in v5 — top menu replaces it) */
 
 /* modals */
 .backdrop{
@@ -551,8 +555,9 @@ button:active{transform:scale(.97)}
   main{margin-bottom:16px}
   main > :not(:last-child){margin-bottom:0}
   #toast{bottom:26px}
-  .bottom-nav{position:static;transform:none;margin:0 auto;display:flex;width:max-content}
-  .nav-shell{display:flex;justify-content:center;padding:4px 0 20px}
+  .hero-grid{grid-template-columns:1.05fr .95fr;align-items:center;gap:20px}
+  .hero-stage{min-height:300px}
+  #char3d{height:320px;max-width:380px}
 }
 /* 3d canvas + wallpaper image layers: negative z without body stacking context,
    so they paint behind content but above the html background */
@@ -688,10 +693,17 @@ body.has-bgimg #bgimg{display:block}
 <div id="bgimg" aria-hidden="true"></div>
 <canvas id="bg3d" aria-hidden="true"></canvas>
 
-<header class="top">
+<header class="top top-nav" id="home">
   <span class="app-name"><span class="logo" aria-hidden="true">
     <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
   </span>Save Up</span>
+  <nav class="menu" aria-label="Main navigation">
+    <button type="button" class="menu-link active" data-nav="home">Home</button>
+    <button type="button" class="menu-link" data-nav="stats">Stats</button>
+    <button type="button" class="menu-link" data-nav="history">History</button>
+    <button type="button" class="menu-link" data-nav="goals">Goals</button>
+    <button type="button" class="menu-link" data-nav="settings">Settings</button>
+  </nav>
   <button class="icon-btn" id="settingsBtn" aria-label="Settings">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.01a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
   </button>
@@ -700,20 +712,28 @@ body.has-bgimg #bgimg{display:block}
 <main>
   <!-- hero -->
   <section class="card hero col-l" aria-label="Balance and goal">
-    <div class="card-head">
-      <span class="section-title">Balance</span>
-      <span class="hero-actions">
-        <button type="button" class="mini-btn" id="replayBtn" aria-label="Replay balance animation">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-        </button>
-        <button type="button" class="mini-btn" id="heroSettingsBtn" aria-label="Edit savings goal">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.01a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        </button>
-      </span>
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <span class="eyebrow">Welcome</span>
+        <div class="hero-head">
+          <span class="section-title">Balance</span>
+          <span class="hero-actions">
+            <button type="button" class="mini-btn" id="replayBtn" aria-label="Replay balance animation">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            </button>
+            <button type="button" class="mini-btn" id="heroSettingsBtn" aria-label="Edit savings goal">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.01a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            </button>
+          </span>
+        </div>
+        <div class="balance" id="balance">₱0.00</div>
+        <div id="goalArea"></div>
+        <button type="button" class="hero-cta" id="heroCta">Start saving</button>
+      </div>
+      <div class="hero-stage" aria-hidden="true">
+        <canvas id="char3d"></canvas>
+      </div>
     </div>
-    <div class="balance" id="balance">₱0.00</div>
-    <div id="goalArea"></div>
-    <svg class="hero-spark" id="heroSpark" viewBox="0 0 300 64" preserveAspectRatio="none" aria-hidden="true"></svg>
   </section>
 
   <!-- add entry -->
@@ -753,7 +773,7 @@ body.has-bgimg #bgimg{display:block}
   </section>
 
   <!-- summary -->
-  <section class="summary col-l" id="summaryRow" aria-label="Summary"></section>
+  <section class="summary col-l" id="summaryRow" data-anchor="stats" aria-label="Summary"></section>
 
   <!-- week -->
   <section class="card col-l" aria-label="This week">
@@ -794,31 +814,6 @@ body.has-bgimg #bgimg{display:block}
 </main>
 
 <button type="button" class="link-btn" id="clearAllBtn" hidden>Clear all</button>
-
-<div class="nav-shell">
-  <nav class="bottom-nav" id="bottomNav" aria-label="Main navigation">
-    <button type="button" class="nav-btn active" data-nav="dashboard">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
-      Dashboard
-    </button>
-    <button type="button" class="nav-btn" data-nav="goals">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5.5"/><circle cx="12" cy="12" r="2"/></svg>
-      Goals
-    </button>
-    <button type="button" class="nav-btn" data-nav="analytics">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="20" x2="5" y2="14"/><line x1="12" y1="20" x2="12" y2="8"/><line x1="19" y1="20" x2="19" y2="4"/></svg>
-      Analytics
-    </button>
-    <button type="button" class="nav-btn" data-nav="settings">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.01a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      Settings
-    </button>
-    <button type="button" class="nav-btn" data-nav="profile">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-      Profile
-    </button>
-  </nav>
-</div>
 
 <!-- settings modal -->
 <div class="backdrop" id="settingsModal" hidden>
@@ -1301,6 +1296,132 @@ body.has-bgimg #bgimg{display:block}
       card.addEventListener("mouseleave", onLeave);
     });
   })();
+
+  /* ---------- hero 3d character (built from primitives, purple + red-orange) ---------- */
+
+  (function(){
+    var canvas = document.getElementById("char3d");
+    if(!canvas || typeof THREE === "undefined") return;
+
+    var renderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+    } catch(e){ canvas.parentElement.style.display = "none"; return; }
+
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera(38, 1, .1, 60);
+    camera.position.set(0, 1.1, 7.4);
+    camera.lookAt(0, .4, 0);
+
+    var PURPLE = 0x8B5CF6, PURPLE_D = 0x5B3AB8, ORANGE = 0xFF4A2E, LAV = 0xA78BFA;
+    var bodyMat = new THREE.MeshStandardMaterial({ color: PURPLE, roughness: .35, metalness: .25 });
+    var darkMat = new THREE.MeshStandardMaterial({ color: PURPLE_D, roughness: .5, metalness: .2 });
+    var glowMat = new THREE.MeshBasicMaterial({ color: ORANGE });
+
+    var char = new THREE.Group();
+
+    // head
+    var head = new THREE.Mesh(new THREE.SphereGeometry(.62, 32, 24), bodyMat);
+    head.position.y = 1.55;
+    char.add(head);
+
+    // eyes: glowing red-orange
+    var eyeGeo = new THREE.SphereGeometry(.09, 12, 10);
+    var eL = new THREE.Mesh(eyeGeo, glowMat); eL.position.set(-.22, 1.62, .54);
+    var eR = new THREE.Mesh(eyeGeo, glowMat); eR.position.set(.22, 1.62, .54);
+    char.add(eL, eR);
+
+    // antenna with orange tip
+    var ant = new THREE.Mesh(new THREE.CylinderGeometry(.03, .03, .34, 8), darkMat);
+    ant.position.y = 2.15;
+    var antTip = new THREE.Mesh(new THREE.SphereGeometry(.08, 10, 8), glowMat);
+    antTip.position.y = 2.34;
+    char.add(ant, antTip);
+
+    // torso
+    var torso = new THREE.Mesh(new THREE.CapsuleGeometry(.52, .78, 8, 16), bodyMat);
+    torso.position.y = .52;
+    char.add(torso);
+
+    // chest light
+    var chest = new THREE.Mesh(new THREE.SphereGeometry(.1, 10, 8), glowMat);
+    chest.position.set(0, .78, .5);
+    char.add(chest);
+
+    // arms: left arm raised waving
+    function arm(side, raise){
+      var g = new THREE.Group();
+      var upper = new THREE.Mesh(new THREE.CapsuleGeometry(.13, .5, 6, 10), bodyMat);
+      upper.position.y = -.3;
+      g.add(upper);
+      var hand = new THREE.Mesh(new THREE.SphereGeometry(.16, 12, 10), darkMat);
+      hand.position.y = -.68;
+      g.add(hand);
+      g.position.set(side * .68, 1.02, 0);
+      g.rotation.z = raise ? side * -2.4 : side * .35;
+      return g;
+    }
+    var armL = arm(-1, true);
+    var armR = arm(1, false);
+    char.add(armL, armR);
+
+    // legs
+    function leg(side){
+      var l = new THREE.Mesh(new THREE.CapsuleGeometry(.15, .5, 6, 10), darkMat);
+      l.position.set(side * .26, -.42, 0);
+      return l;
+    }
+    char.add(leg(-1), leg(1));
+
+    // floating glow disc under the character
+    var disc = new THREE.Mesh(
+      new THREE.CircleGeometry(1.25, 40),
+      new THREE.MeshBasicMaterial({ color: PURPLE, transparent: true, opacity: .28 })
+    );
+    disc.rotation.x = -Math.PI / 2;
+    disc.position.y = -1.15;
+    char.add(disc);
+
+    scene.add(char);
+
+    // lights
+    scene.add(new THREE.AmbientLight(0xB9A8E8, .55));
+    var key = new THREE.DirectionalLight(0xC9B8FF, 1.5); key.position.set(3, 5, 4);
+    var rim = new THREE.DirectionalLight(0xFF4A2E, .8); rim.position.set(-4, 2, -3);
+    scene.add(key, rim);
+
+    function resize(){
+      var r = canvas.getBoundingClientRect();
+      if(r.width < 4 || r.height < 4) return;
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      renderer.setSize(r.width, r.height, false);
+      camera.aspect = r.width / r.height;
+      camera.updateProjectionMatrix();
+    }
+    resize();
+    window.addEventListener("resize", resize);
+
+    if(reduceMotion){
+      renderer.render(scene, camera);
+      return;
+    }
+
+    var t = 0, raf = null;
+    function tick(){
+      t += .016;
+      char.position.y = Math.sin(t * 1.6) * .09;           // float
+      char.rotation.y = Math.sin(t * .5) * .3;             // lazy turn
+      armL.rotation.z = -2.4 + Math.sin(t * 4.2) * .35;    // wave
+      antTip.material.color.setHSL(.02, 1, .55 + Math.sin(t * 3) * .12); // pulse
+      renderer.render(scene, camera);
+      raf = requestAnimationFrame(tick);
+    }
+    tick();
+    document.addEventListener("visibilitychange", function(){
+      if(document.hidden){ if(raf) cancelAnimationFrame(raf); raf = null; }
+      else if(!raf) tick();
+    });
+  })();
 })();
 </script>
 <script>
@@ -1475,7 +1596,7 @@ body.has-bgimg #bgimg{display:block}
   var insightsArea = $("insightsArea");
   var achArea = $("achArea");
   var activityArea = $("activityArea");
-  var heroSpark = $("heroSpark");
+  var heroSpark = $("heroSpark"); // removed in v5 hero; kept null-safe
   var clearAllBtn = $("clearAllBtn");
   var amountInput = $("amount");
   var amountWrap = $("amountWrap");
@@ -1700,9 +1821,11 @@ body.has-bgimg #bgimg{display:block}
   }
 
   function renderSpark(){
+    var el = $("heroSpark");
+    if(!el) return;
     var s = balanceSeries();
-    if(s.keys.length < 2){ heroSpark.innerHTML = ""; return; }
-    heroSpark.innerHTML = chartSvg(s, 300, 64, 4);
+    if(s.keys.length < 2){ el.innerHTML = ""; return; }
+    el.innerHTML = chartSvg(s, 300, 64, 4);
   }
 
   function renderAchievements(b){
@@ -1941,34 +2064,39 @@ body.has-bgimg #bgimg{display:block}
     closeModal("confirmModal");
   });
 
-  /* ---------- bottom nav ---------- */
+  /* ---------- top nav menu ---------- */
 
-  var navEl = $("bottomNav");
-  navEl.addEventListener("click", function(e){
+  document.querySelector(".menu").addEventListener("click", function(e){
     var btn = e.target.closest("[data-nav]");
     if(!btn) return;
-    navEl.querySelectorAll(".nav-btn").forEach(function(b){ b.classList.remove("active"); });
+    document.querySelectorAll(".menu-link").forEach(function(b){ b.classList.remove("active"); });
     btn.classList.add("active");
     var action = btn.getAttribute("data-nav");
-    if(action === "dashboard"){
+    var opts = { behavior: REDUCE_MOTION ? "auto" : "smooth", block: "start" };
+    if(action === "home"){
       window.scrollTo({ top: 0, behavior: REDUCE_MOTION ? "auto" : "smooth" });
+    } else if(action === "stats"){
+      summaryRow.scrollIntoView(opts);
+    } else if(action === "history"){
+      historyArea.closest("section").scrollIntoView(opts);
     } else if(action === "goals"){
       $("goalInput").value = state.goal === null ? "" : state.goal;
       $("goalName").value = state.goalName || "";
       $("goalDate").value = state.goalDate || "";
       $("goalError").hidden = true;
       openModal("goalModal");
-    } else if(action === "analytics"){
-      $("insightsCard").scrollIntoView({ behavior: REDUCE_MOTION ? "auto" : "smooth", block: "start" });
     } else if(action === "settings"){
       $("currencyInput").value = state.currency;
       updateThemeSeg();
       updateBgChips();
       openModal("settingsModal");
-    } else if(action === "profile"){
-      renderProfile();
-      openModal("profileModal");
     }
+  });
+
+  // hero CTA scrolls to the add-entry card
+  $("heroCta").addEventListener("click", function(){
+    addBtn.closest("section").scrollIntoView({ behavior: REDUCE_MOTION ? "auto" : "smooth", block: "center" });
+    $("amount").focus();
   });
 
   /* ---------- modals ---------- */
