@@ -166,8 +166,39 @@ button:active{transform:scale(.97)}
 }
 .hero-grid{position:relative;display:grid;grid-template-columns:1fr;gap:8px}
 .hero-copy{position:relative}
-.hero-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.hero-head .section-title{margin-bottom:0}
+.hero-title{
+  font-size:clamp(28px,6vw,44px);font-weight:800;line-height:1.12;
+  letter-spacing:-.02em;margin:0 0 12px;
+}
+.hero-title .grad{
+  background:linear-gradient(120deg,var(--accent-2),var(--accent));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero-sub{
+  margin:0 0 20px;max-width:46ch;font-size:15px;line-height:1.6;color:var(--text-dim);
+}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}
+.stat-box{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:14px 6px 12px;border:1px solid var(--glass-border);border-radius:14px;
+  background:rgba(139,92,246,.06);
+}
+.stat-num{font-size:18px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.2}
+.stat-box .balance{
+  font-size:18px;margin:0;line-height:1.2;text-shadow:none;max-width:100%;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.stat-label{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim)}
+.hero-btns{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.hero-btns .hero-cta{margin-top:0}
+.hero-cta.ghost{
+  background:transparent;color:var(--text);
+  border:1px solid var(--glass-border);box-shadow:none;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.hero-cta.ghost svg{width:15px;height:15px}
+.hero-cta.ghost:hover{box-shadow:0 0 16px var(--glow)}
+.hero-btns .mini-btn{margin-top:0}
 .eyebrow{
   display:inline-block;font-size:12px;font-weight:700;letter-spacing:.28em;
   text-transform:uppercase;color:var(--accent);margin-bottom:12px;
@@ -555,9 +586,11 @@ button:active{transform:scale(.97)}
   main{margin-bottom:16px}
   main > :not(:last-child){margin-bottom:0}
   #toast{bottom:26px}
+  .hero{grid-column:1 / -1}   /* hero spans full page width; page grid starts below it */
   .hero-grid{grid-template-columns:1.05fr .95fr;align-items:center;gap:20px}
   .hero-stage{min-height:300px}
   #char3d{height:320px;max-width:380px}
+  .hero-title{font-size:clamp(34px,4.2vw,50px)}
 }
 /* 3d canvas + wallpaper image layers: negative z without body stacking context,
    so they paint behind content but above the html background */
@@ -715,20 +748,33 @@ body.has-bgimg #bgimg{display:block}
     <div class="hero-grid">
       <div class="hero-copy">
         <span class="eyebrow">Welcome</span>
-        <div class="hero-head">
-          <span class="section-title">Balance</span>
-          <span class="hero-actions">
-            <button type="button" class="mini-btn" id="replayBtn" aria-label="Replay balance animation">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-            </button>
-            <button type="button" class="mini-btn" id="heroSettingsBtn" aria-label="Edit savings goal">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.01a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-            </button>
-          </span>
+        <h2 class="hero-title">Hello Everyone, I'm <span class="grad">Save Up</span></h2>
+        <p class="hero-sub">Your savings companion — log what you save and spend, watch your money grow, and hit your goals faster.</p>
+        <div class="stat-row">
+          <div class="stat-box">
+            <div class="balance" id="balance">₱0.00</div>
+            <span class="stat-label">Balance</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-num" id="heroSaved">₱0.00</span>
+            <span class="stat-label">Total Saved</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-num" id="heroDays">0</span>
+            <span class="stat-label">Days Tracked</span>
+          </div>
         </div>
-        <div class="balance" id="balance">₱0.00</div>
+        <div class="hero-btns">
+          <button type="button" class="hero-cta" id="heroCta">Start Saving</button>
+          <button type="button" class="hero-cta ghost" id="heroSettingsBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            Set a Goal
+          </button>
+          <button type="button" class="mini-btn" id="replayBtn" aria-label="Replay balance animation">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </button>
+        </div>
         <div id="goalArea"></div>
-        <button type="button" class="hero-cta" id="heroCta">Start saving</button>
       </div>
       <div class="hero-stage" aria-hidden="true">
         <canvas id="char3d"></canvas>
@@ -1325,10 +1371,18 @@ body.has-bgimg #bgimg{display:block}
     head.position.y = 1.55;
     char.add(head);
 
-    // eyes: glowing red-orange
-    var eyeGeo = new THREE.SphereGeometry(.09, 12, 10);
-    var eL = new THREE.Mesh(eyeGeo, glowMat); eL.position.set(-.22, 1.62, .54);
-    var eR = new THREE.Mesh(eyeGeo, glowMat); eR.position.set(.22, 1.62, .54);
+    // visor: dark face plate with glowing red-orange eyes
+    // visor: dark face plate poking out the front of the head, glowing eyes on it
+    var visor = new THREE.Mesh(
+      new THREE.SphereGeometry(.46, 24, 18),
+      new THREE.MeshStandardMaterial({ color: 0x0B0714, roughness: .15, metalness: .6 })
+    );
+    visor.scale.set(1, .6, .75);
+    visor.position.set(0, 1.55, .32);
+    char.add(visor);
+    var eyeGeo = new THREE.SphereGeometry(.075, 12, 10);
+    var eL = new THREE.Mesh(eyeGeo, glowMat); eL.position.set(-.16, 1.56, .72);
+    var eR = new THREE.Mesh(eyeGeo, glowMat); eR.position.set(.16, 1.56, .72);
     char.add(eL, eR);
 
     // antenna with orange tip
@@ -1345,7 +1399,7 @@ body.has-bgimg #bgimg{display:block}
 
     // chest light
     var chest = new THREE.Mesh(new THREE.SphereGeometry(.1, 10, 8), glowMat);
-    chest.position.set(0, .78, .5);
+    chest.position.set(0, .78, .56);
     char.add(chest);
 
     // arms: left arm raised waving
@@ -1664,6 +1718,13 @@ body.has-bgimg #bgimg{display:block}
 
     setBalance(b);
     curPrefix.textContent = state.currency;
+    var hs = 0, hd = {};
+    for(var i = 0; i < state.entries.length; i++){
+      if(state.entries[i].type === "save") hs += state.entries[i].amount;
+      hd[state.entries[i].date] = true;
+    }
+    $("heroSaved").textContent = fmt(hs);
+    $("heroDays").textContent = Object.keys(hd).length;
 
     renderGoal(b);
     renderSummary();
